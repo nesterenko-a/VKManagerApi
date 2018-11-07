@@ -1,0 +1,39 @@
+﻿<Window x:Class="VKManager.View.LoginForm"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VKManager.View"
+        mc:Ignorable="d"
+        Title="Login VK" Height="500" Width="350" WindowStyle="None" ResizeMode="CanResize">
+    <Grid>
+        <Rectangle Height="300" VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0.3">
+                    <GradientStop Color="#FF2281D1"/>
+                    <GradientStop Color="#FF3426A8" Offset="1"/>
+                    <GradientStop Color="#FF33288B" Offset="0.5"/>
+
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Button x:Name="btnBack" Click="btnBack_Click" BorderBrush="{x:Null}" Background="{x:Null}" Height="100" Width="120" Foreground="White" VerticalAlignment="Top" Margin="20">
+            <materialDesign:PackIcon  Width="100" Height="100" Kind="HomeCircle" HorizontalAlignment="Center"/>
+        </Button>
+        <Rectangle Width="280" Height="240" Fill="White" VerticalAlignment="Bottom" Margin="0,100">
+            <Rectangle.Effect>
+                <DropShadowEffect Color="#FFBBBBBB"  Direction="0" BlurRadius="15" RenderingBias="Quality" ShadowDepth="1"/>
+            </Rectangle.Effect>
+        </Rectangle>
+        <Grid Width="280" Height="240" VerticalAlignment="Bottom" Margin="0,100">
+            <TextBlock Text="LOGIN" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="5" Foreground="Gray" FontSize="18"/>
+            <StackPanel VerticalAlignment="Center" Margin="10">
+                <TextBox  x:Name="txtLogin" FontSize="18" materialDesign:HintAssist.Hint="EMAIL" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,10" />
+                <PasswordBox x:Name="txtPassword" FontSize="18" materialDesign:HintAssist.Hint="PASSWORD" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" Margin="0,10"/>
+            </StackPanel>
+        </Grid>
+        <Button x:Name="btnLogin" Click="btnLogin_Click" VerticalAlignment="Bottom" Margin="0,85" Width="150" Content="LOGIN"/>
+
+    </Grid>
+</Window>
