@@ -33,7 +33,8 @@ namespace VKManager
         public MainWindow()
         {
             InitializeComponent();
-           // this.DataContext = groupModel;
+            // groupModel.response.items
+
             this.Loaded += MainWindow_Loaded;
         }
 
@@ -66,7 +67,14 @@ namespace VKManager
             this.IsEnabled = false;
             loginForm.Owner = this;
             loginForm.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            loginForm.Show();   
+            loginForm.Show();
+
+        }
+
+        private void btnGetGroupsName_Click(object sender, RoutedEventArgs e)
+        {
+            this.DataContext = from t in groupModel.response.items
+                               select t.name;
         }
     }
 }

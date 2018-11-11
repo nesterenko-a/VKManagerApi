@@ -1,4 +1,6 @@
-﻿namespace VKApi.Model
+﻿using System.Collections.Generic;
+
+namespace VKApi.Model
 {
     public class GroupModel
     {
@@ -7,7 +9,7 @@
     public class Response
     {
         public int count { get; set; }
-        public Item[] items { get; set; }
+        public List<Item> items { get; set; }
     }
     public class Item
     {
