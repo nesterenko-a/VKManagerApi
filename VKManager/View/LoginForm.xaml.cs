@@ -27,6 +27,17 @@ namespace VKManager.View
     {
         private string login;
         private string pass;
+        private GroupModel groupModel;
+
+        //Пока не пригодилась
+        public GroupModel GroupModel
+        {
+            get
+            {
+                return groupModel;
+            }
+        }
+
         static readonly FileInfo file = new FileInfo(System.IO.Path.Combine(Environment.CurrentDirectory, "login.txt"));
         AutorizationModel autorizationModel;
         public LoginForm()
@@ -74,6 +85,7 @@ namespace VKManager.View
                 }
 
                 this.Owner.IsEnabled = true;
+                MainWindow.groupModel = groupModel;
                 Close();
             }
             else
@@ -96,9 +108,9 @@ namespace VKManager.View
         {
             try
             {
-                GroupModel group = Group.GetGropups(autorizationModel.user_id, autorizationModel.access_token, true);
+                groupModel = Group.GetGropups(autorizationModel.user_id, autorizationModel.access_token, true);
                 GlobalConfig.AccessToken = autorizationModel.access_token;
-                GlobalConfig.logger.Info("GroupSerialize: " + Serialized<GroupModel>.GetSerializeString(group));
+                GlobalConfig.logger.Info("GroupSerialize: " + Serialized<GroupModel>.GetSerializeString(groupModel));
                 return true;
             }
             #region Отраработка Ошибок
