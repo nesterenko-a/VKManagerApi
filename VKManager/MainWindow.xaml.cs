@@ -29,7 +29,7 @@ namespace VKManager
     {
         public static string LoginName { get; set; }
         public static GroupModel groupModel;
-
+        public static WallModel wallModel;
         public MainWindow()
         {
             InitializeComponent();
@@ -73,8 +73,11 @@ namespace VKManager
 
         private void btnGetGroupsName_Click(object sender, RoutedEventArgs e)
         {
-            this.DataContext = from t in groupModel.response.items
-                               select t.name;
+            //this.DataContext = from t in groupModel.response.items
+            //                   select t.name;
+
+            this.DataContext = from t in wallModel.response.items
+                               select t.id;
         }
     }
 }
