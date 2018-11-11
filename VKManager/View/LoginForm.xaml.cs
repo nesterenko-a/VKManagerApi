@@ -27,6 +27,17 @@ namespace VKManager.View
     {
         private string login;
         private string pass;
+        private GroupModel groupModel;
+        private WallModel wallModel;
+        //Пока не пригодилась
+        public GroupModel GroupModel
+        {
+            get
+            {
+                return groupModel;
+            }
+        }
+
         static readonly FileInfo file = new FileInfo(System.IO.Path.Combine(Environment.CurrentDirectory, "login.txt"));
         AutorizationModel autorizationModel;
         public LoginForm()
@@ -71,6 +82,13 @@ namespace VKManager.View
                 if (GroupSuccess())
                 {
                     MessageBox.Show("Группа успешно получена");
+                    MainWindow.groupModel = groupModel;
+                }
+
+                if (WallSuccess())
+                {
+                    MessageBox.Show("Стена успешно получена");
+                    MainWindow.wallModel = wallModel;
                 }
 
                 this.Owner.IsEnabled = true;
@@ -82,6 +100,53 @@ namespace VKManager.View
                 MessageBox.Show("Неудачная попытка входа");
             }
         }
+
+        private bool WallSuccess()
+        {
+            try
+            {
+                wallModel = Wall.GetWalls(autorizationModel.user_id, autorizationModel.access_token, true);
+                GlobalConfig.AccessToken = autorizationModel.access_token;
+                GlobalConfig.logger.Info("WallSerialize: " + Serialized<WallModel>.GetSerializeString(wallModel));
+                return true;
+            }
+            #region Отраработка Ошибок
+            //TODO: Нехватает МоделиОшибок при другом JSON ответе сервера
+            catch (HttpException ex)
+            {
+                GlobalConfig.logger.Info("Произошла ошибка при работе с HTTP-сервером: {0}", ex.Message);
+                switch (ex.Status)
+                {
+                    case HttpExceptionStatus.Other:
+                        GlobalConfig.logger.Info("Неизвестная ошибка");
+                        break;
+
+                    case HttpExceptionStatus.ProtocolError:
+                        GlobalConfig.logger.Info("Код состояния: {0}", (int)ex.HttpStatusCode);
+                        break;
+
+                    case HttpExceptionStatus.ConnectFailure:
+                        GlobalConfig.logger.Info("Не удалось соединиться с HTTP-сервером.");
+                        break;
+
+                    case HttpExceptionStatus.SendFailure:
+                        GlobalConfig.logger.Info("Не удалось отправить запрос HTTP-серверу.");
+                        break;
+
+                    case HttpExceptionStatus.ReceiveFailure:
+                        GlobalConfig.logger.Info("Не удалось загрузить ответ от HTTP-сервера.");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                GlobalConfig.logger.Error($"Непредвиденная ошибка \n {ex.Message} \r\n {ex.StackTrace} \r\n {ex}");
+                //MessageBox.Show(ex.Message);
+            }
+            return false;
+            #endregion
+        }
+
         private void WritelnLoginPassEncrypt()
         {
             using (StreamWriter stream = File.CreateText(file.FullName))
@@ -96,9 +161,9 @@ namespace VKManager.View
         {
             try
             {
-                GroupModel group = Group.GetGropups(autorizationModel.user_id, autorizationModel.access_token, true);
+                groupModel = Group.GetGropups(autorizationModel.user_id, autorizationModel.access_token, true);
                 GlobalConfig.AccessToken = autorizationModel.access_token;
-                GlobalConfig.logger.Info("GroupSerialize: " + Serialized<GroupModel>.GetSerializeString(group));
+                GlobalConfig.logger.Info("GroupSerialize: " + Serialized<GroupModel>.GetSerializeString(groupModel));
                 return true;
             }
             #region Отраработка Ошибок
