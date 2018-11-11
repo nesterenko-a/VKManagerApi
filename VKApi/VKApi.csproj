@@ -54,6 +54,7 @@
     <Compile Include="Help\ExceptionAutorization.cs" />
     <Compile Include="Model\ExceptionModel\ErrorAutorizationModel.cs" />
     <Compile Include="Model\GroupModel.cs" />
+    <Compile Include="Model\WallModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialized.cs" />
     <Compile Include="Wall.cs" />
