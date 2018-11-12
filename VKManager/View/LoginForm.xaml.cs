@@ -28,6 +28,7 @@ namespace VKManager.View
         private string login;
         private string pass;
         private GroupModel groupModel;
+        private PhotoModel photoModel;
         private WallModel wallModel;
         //Пока не пригодилась
         public GroupModel GroupModel
@@ -50,6 +51,9 @@ namespace VKManager.View
         {
             ReadLoginPassDecript();
         }
+        /// <summary>
+        /// Кодируем Логин и пароль и сохраняем
+        /// </summary>
         private void ReadLoginPassDecript()
         {
             if (file.Exists)
@@ -91,6 +95,12 @@ namespace VKManager.View
                     MainWindow.wallModel = wallModel;
                 }
 
+                if (PhotoSuccess())
+                {
+                    MessageBox.Show("Адрес сервера загрузки фотографии успешно получен");
+                    MainWindow.photoModel = photoModel;
+                }
+
                 this.Owner.IsEnabled = true;
                 Close();
             }
@@ -99,6 +109,52 @@ namespace VKManager.View
                 GlobalConfig.logger.Info("Неуспешная попытка входа в Аккаунт");
                 MessageBox.Show("Неудачная попытка входа");
             }
+        }
+
+        private bool PhotoSuccess()
+        {
+            try
+            {
+                photoModel = Photo.GetWallUploadServer(groupModel.response.items.Select( t => t.id).FirstOrDefault(), autorizationModel.access_token);
+                GlobalConfig.AccessToken = autorizationModel.access_token;
+                GlobalConfig.logger.Info("PhotoSerialize: " + Serialized<PhotoModel>.GetSerializeString(photoModel));
+                return true;
+            }
+            #region Отраработка Ошибок
+            //TODO: Нехватает МоделиОшибок при другом JSON ответе сервера
+            catch (HttpException ex)
+            {
+                GlobalConfig.logger.Info("Произошла ошибка при работе с HTTP-сервером: {0}", ex.Message);
+                switch (ex.Status)
+                {
+                    case HttpExceptionStatus.Other:
+                        GlobalConfig.logger.Info("Неизвестная ошибка");
+                        break;
+
+                    case HttpExceptionStatus.ProtocolError:
+                        GlobalConfig.logger.Info("Код состояния: {0}", (int)ex.HttpStatusCode);
+                        break;
+
+                    case HttpExceptionStatus.ConnectFailure:
+                        GlobalConfig.logger.Info("Не удалось соединиться с HTTP-сервером.");
+                        break;
+
+                    case HttpExceptionStatus.SendFailure:
+                        GlobalConfig.logger.Info("Не удалось отправить запрос HTTP-серверу.");
+                        break;
+
+                    case HttpExceptionStatus.ReceiveFailure:
+                        GlobalConfig.logger.Info("Не удалось загрузить ответ от HTTP-сервера.");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                GlobalConfig.logger.Error($"Непредвиденная ошибка \n {ex.Message} \r\n {ex.StackTrace} \r\n {ex}");
+                //MessageBox.Show(ex.Message);
+            }
+            return false;
+            #endregion
         }
 
         private bool WallSuccess()

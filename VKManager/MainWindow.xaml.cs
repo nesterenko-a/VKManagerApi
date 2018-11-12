@@ -30,6 +30,14 @@ namespace VKManager
         public static string LoginName { get; set; }
         public static GroupModel groupModel;
         public static WallModel wallModel;
+        public static PhotoModel photoModel;
+        public static string PhotoModel
+        {
+            get
+            {
+                return photoModel.response.upload_url;
+            }
+        }
         public MainWindow()
         {
             InitializeComponent();
@@ -78,6 +86,8 @@ namespace VKManager
 
             this.DataContext = from t in wallModel.response.items
                                select t.id;
+            txtPhotoUrl.Text = photoModel.response.upload_url;
+            //this.DataContext = photoModel.response.upload_url;
         }
     }
 }
