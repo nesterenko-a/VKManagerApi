@@ -83,5 +83,11 @@ namespace VKApi
             #endregion
             return JsonConvert.DeserializeObject<UploadPhotoModel>(content);
         }
+
+        public static void SavePhotoToPath(string urlPhoto, string pathSave = "test.jpg")
+        {
+            HttpRequest request = new HttpRequest();
+            request.Get(urlPhoto).ToFile(pathSave);
+        }
     }
 }

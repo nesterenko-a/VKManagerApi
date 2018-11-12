@@ -99,7 +99,8 @@ namespace VKManager.View
                 {
                     MessageBox.Show("Адрес сервера загрузки фотографии успешно получен");
                     MainWindow.photoModel = photoModel; GlobalConfig.logger.Info(new String('-', 50));
-                    GlobalConfig.logger.Info(Photo.UploadPhoto("photo.jpg", photoModel.response.upload_url));
+                    GlobalConfig.logger.Info(Serialized<UploadPhotoModel>.GetSerializeString(Photo.UploadPhoto("photo.jpg", photoModel.response.upload_url)));
+                    Photo.SavePhotoToPath("https://pbs.twimg.com/media/Dry69uVX4AEDAHA.jpg");
                 }
 
                 this.Owner.IsEnabled = true;

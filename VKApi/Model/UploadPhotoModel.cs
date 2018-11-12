@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VKApi.Model
 {
-    class UploadPhotoModel
+    public class UploadPhotoModel
     {
         public int server { get; set; }
         public string photo { get; set; }
