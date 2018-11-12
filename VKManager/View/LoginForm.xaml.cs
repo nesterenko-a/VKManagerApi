@@ -98,7 +98,8 @@ namespace VKManager.View
                 if (PhotoSuccess())
                 {
                     MessageBox.Show("Адрес сервера загрузки фотографии успешно получен");
-                    MainWindow.photoModel = photoModel;
+                    MainWindow.photoModel = photoModel; GlobalConfig.logger.Info(new String('-', 50));
+                    GlobalConfig.logger.Info(Photo.UploadPhoto("photo.jpg", photoModel.response.upload_url));
                 }
 
                 this.Owner.IsEnabled = true;
