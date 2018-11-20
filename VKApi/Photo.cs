@@ -29,7 +29,7 @@ namespace VKApi
             #region Combiner URL
             RequestParams urlParams = new RequestParams();
             urlParams["group_id"] = group_id;
-            urlParams["access_token"] = access_token;      
+            urlParams["access_token"] = access_token;
             urlParams["v"] = Variables.Ver;
             #endregion
             try
@@ -61,6 +61,33 @@ namespace VKApi
                 throw new Exception();
             }
             #endregion
+        }
+
+        public static UploadPhotoModel UploadPhoto(string pathPhoto, string upload_url)
+        {
+            request.AddFile("photo", pathPhoto, pathPhoto);
+            HttpResponse response = request.Post(upload_url);
+            string content = response.ToString();
+            #region Проверяем не вернулся ли другой JSON (ошибка)
+            JObject o = JObject.Parse(content);
+            if (o.ContainsKey("error"))
+            {
+                string error = o.ContainsKey("error").ToString();
+                switch (error)
+                {
+                    case "":; break; //TODO: Узнать модель ошибки //throw new Exception(error);
+                    default:
+                        throw new Exception($"Непредвиденная ошибка {error} \n {response.Address.ToString()}");
+                }
+            }
+            #endregion
+            return JsonConvert.DeserializeObject<UploadPhotoModel>(content);
+        }
+
+        public static void SavePhotoToPath(string urlPhoto, string pathSave = "test.jpg")
+        {
+            HttpRequest request = new HttpRequest();
+            request.Get(urlPhoto).ToFile(pathSave);
         }
     }
 }
