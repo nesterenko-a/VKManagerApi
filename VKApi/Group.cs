@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace VKApi
 {
     //https://vk.com/dev/groups.get
-    public static class Group
+    public static class Group<T>
     {
         static HttpRequest request = new HttpRequest();
         /// <summary>
@@ -26,8 +26,13 @@ namespace VKApi
         /// <param name="offset">смещение, необходимое для выборки определённого подмножества сообществ.</param>
         /// <param name="count">количество сообществ, информацию о которых нужно вернуть.</param>
         /// <returns></returns>
-        public static GroupModel GetGropups(int user_id, string access_token, bool extended = false, string filter = "", string fields = "", int offset = 0, int count = 1000)
+        public static T GetGouprs(int user_id, string access_token, WriteLogs writeLogs, int extended = 1, string filter = "", string fields = "", int offset = 0, int count = 2)
         {
+            if (typeof(T).ToString().Contains("GroupModelMin"))
+            {
+                extended = 0;
+            }
+
             #region Combiner URL
             RequestParams urlParams = new RequestParams();
             urlParams["user_id"] = user_id;
@@ -43,6 +48,7 @@ namespace VKApi
             {
                 HttpResponse response = request.Get($"https://api.vk.com/method/" + "groups.get", urlParams);
                 string content = response.ToString();
+                writeLogs(typeof(T).ToString() + content);
                 #region Проверяем не вернулся ли другой JSON (ошибка)
                 JObject o = JObject.Parse(content);
                 if (o.ContainsKey("error"))
@@ -56,7 +62,7 @@ namespace VKApi
                     }
                 }
                 #endregion
-                return JsonConvert.DeserializeObject<GroupModel>(content);
+                return JsonConvert.DeserializeObject<T>(content);
             }
             #region Exception 
             catch (HttpException)

@@ -28,9 +28,11 @@ namespace VKManager
     public partial class MainWindow : Window
     {
         public static string LoginName { get; set; }
-        public static GroupModel groupModel;
+        public static GroupModelFull groupModel;
         public static WallModel wallModel;
         public static PhotoModel photoModel;
+        public static UploadPhotoModel uploadPhotoModel;
+
         public static string PhotoModel
         {
             get

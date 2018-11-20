@@ -14,7 +14,7 @@ namespace VKApi
     public class Wall
     {
         static HttpRequest request = new HttpRequest();
-        public static WallModel GetWalls(int owner_id, string access_token, bool extended = false, string filter = "", string fields = "", int offset = 0, int count = 1000)
+        public static WallModel GetWalls(int owner_id, string access_token, bool extended = false, string filter = "", string fields = "", int offset = 0, int count = 2)
         {
             #region Combiner URL
             RequestParams urlParams = new RequestParams();

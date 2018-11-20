@@ -27,11 +27,13 @@ namespace VKManager.View
     {
         private string login;
         private string pass;
-        private GroupModel groupModel;
+        private GroupModelFull groupModel;
         private PhotoModel photoModel;
         private WallModel wallModel;
+        private UploadPhotoModel uploadPhotoModel;
+
         //Пока не пригодилась
-        public GroupModel GroupModel
+        public GroupModelFull GroupModel
         {
             get
             {
@@ -98,10 +100,17 @@ namespace VKManager.View
                 if (PhotoSuccess())
                 {
                     MessageBox.Show("Адрес сервера загрузки фотографии успешно получен");
-                    MainWindow.photoModel = photoModel; GlobalConfig.logger.Info(new String('-', 50));
-                    GlobalConfig.logger.Info(Serialized<UploadPhotoModel>.GetSerializeString(Photo.UploadPhoto("photo.jpg", photoModel.response.upload_url)));
-                    Photo.SavePhotoToPath("https://pbs.twimg.com/media/Dry69uVX4AEDAHA.jpg");
+                    MainWindow.photoModel = photoModel;
+
+                    if (UploadSuccess())
+                    {
+                        MessageBox.Show("Фотография успешно загружена");
+                        MainWindow.uploadPhotoModel = uploadPhotoModel;
+                    }
                 }
+
+                //TODO: Сохранение файла по URL
+                //Photo.SavePhotoToPath("https://pbs.twimg.com/media/Dry69uVX4AEDAHA.jpg", "test.jpg");
 
                 this.Owner.IsEnabled = true;
                 Close();
@@ -113,12 +122,56 @@ namespace VKManager.View
             }
         }
 
+        private bool UploadSuccess()
+        {
+            try
+            {
+                uploadPhotoModel = Photo.UploadPhoto("photo.jpg", photoModel.response.upload_url);
+                GlobalConfig.logger.Info(new String('-', 50) + Serialized<UploadPhotoModel>.GetSerializeString(uploadPhotoModel));
+                return true;
+            }
+            #region Отраработка Ошибок
+            //TODO: Нехватает МоделиОшибок при другом JSON ответе сервера
+            catch (HttpException ex)
+            {
+                GlobalConfig.logger.Info("Произошла ошибка при работе с HTTP-сервером: {0}", ex.Message);
+                switch (ex.Status)
+                {
+                    case HttpExceptionStatus.Other:
+                        GlobalConfig.logger.Info("Неизвестная ошибка");
+                        break;
+
+                    case HttpExceptionStatus.ProtocolError:
+                        GlobalConfig.logger.Info("Код состояния: {0}", (int)ex.HttpStatusCode);
+                        break;
+
+                    case HttpExceptionStatus.ConnectFailure:
+                        GlobalConfig.logger.Info("Не удалось соединиться с HTTP-сервером.");
+                        break;
+
+                    case HttpExceptionStatus.SendFailure:
+                        GlobalConfig.logger.Info("Не удалось отправить запрос HTTP-серверу.");
+                        break;
+
+                    case HttpExceptionStatus.ReceiveFailure:
+                        GlobalConfig.logger.Info("Не удалось загрузить ответ от HTTP-сервера.");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                GlobalConfig.logger.Error($"Непредвиденная ошибка \n {ex.Message} \r\n {ex.StackTrace} \r\n {ex}");
+                //MessageBox.Show(ex.Message);
+            }
+            return false;
+            #endregion
+        }
+
         private bool PhotoSuccess()
         {
             try
             {
-                photoModel = Photo.GetWallUploadServer(groupModel.response.items.Select( t => t.id).FirstOrDefault(), autorizationModel.access_token);
-                GlobalConfig.AccessToken = autorizationModel.access_token;
+                photoModel = Photo.GetWallUploadServer(groupModel.response.items.Select( t => t.id).FirstOrDefault(), GlobalConfig.AccessToken);
                 GlobalConfig.logger.Info("PhotoSerialize: " + Serialized<PhotoModel>.GetSerializeString(photoModel));
                 return true;
             }
@@ -204,24 +257,12 @@ namespace VKManager.View
             return false;
             #endregion
         }
-
-        private void WritelnLoginPassEncrypt()
-        {
-            using (StreamWriter stream = File.CreateText(file.FullName))
-            {
-                stream.WriteLine(LoginProtector.Encrypt(login, "kdfgjlDS9df"));
-                stream.WriteLine(LoginProtector.Encrypt(pass, "sfajslkfjfo"));
-            }
-        }
-
         //TODO: Переместить на главную форму или еще куда
         private bool GroupSuccess()
         {
             try
             {
-                groupModel = Group.GetGropups(autorizationModel.user_id, autorizationModel.access_token, true);
-                GlobalConfig.AccessToken = autorizationModel.access_token;
-                GlobalConfig.logger.Info("GroupSerialize: " + Serialized<GroupModel>.GetSerializeString(groupModel));
+                groupModel = Group<GroupModelFull>.GetGouprs(autorizationModel.user_id, autorizationModel.access_token, GlobalConfig.logger.Info);
                 return true;
             }
             #region Отраработка Ошибок
@@ -265,14 +306,6 @@ namespace VKManager.View
         {
             this.login = login;
             this.pass = pass;
-            #region Нереализованная идея с Наследованием модели responce JSON
-            //AutorizationModel autorizationModel = new AutorizationModel();
-            //AbstractRequesModel abstractReques = autorizationModel; //UpCast
-
-            //AutoRegistration registration = new AutoRegistration();
-            //abstractReques = registration.Login("alexkwest@rambler.ru", "nastia78");
-            //autorizationModel = (AutorizationModel)abstractReques; //DownCast
-            #endregion
             try
             {
                 txtLogin.Text = new MailAddress(txtLogin.Text).Address;
@@ -331,11 +364,19 @@ namespace VKManager.View
             return false;
             #endregion
         }
-
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
             this.Owner.IsEnabled = true;
             Close();
+        }
+
+        private void WritelnLoginPassEncrypt()
+        {
+            using (StreamWriter stream = File.CreateText(file.FullName))
+            {
+                stream.WriteLine(LoginProtector.Encrypt(login, "kdfgjlDS9df"));
+                stream.WriteLine(LoginProtector.Encrypt(pass, "sfajslkfjfo"));
+            }
         }
         private void DoSomeThing()
         {

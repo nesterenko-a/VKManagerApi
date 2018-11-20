@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace VKApi.Help
 {
+    public delegate void WriteLogs(string message);
     #region Не реализованная модель своего Логгера. Заменена на Библиотеку NLog
     public interface ILogger
     {
