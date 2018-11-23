@@ -28,9 +28,9 @@ namespace VKManager.View
         private string login;
         private string pass;
         private GroupModelFull groupModel;
-        private PhotoModel photoModel;
+        //private PhotoModel photoModel;
         private WallModel wallModel;
-        private UploadPhotoModel uploadPhotoModel;
+        //private UploadPhotoModel uploadPhotoModel;
 
         //Пока не пригодилась
         public GroupModelFull GroupModel
@@ -85,29 +85,29 @@ namespace VKManager.View
             {
                 WritelnLoginPassEncrypt();
                 //TODO: GroupSuccess() Переместить на главную форму
-                if (GroupSuccess())
-                {
-                    MessageBox.Show("Группа успешно получена");
-                    MainWindow.groupModel = groupModel;
-                }
+                //if (GroupSuccess())
+                //{
+                //    MessageBox.Show("Группа успешно получена");
+                //    MainWindow.groupModel = groupModel;
+                //}
 
-                if (WallSuccess())
-                {
-                    MessageBox.Show("Стена успешно получена");
-                    MainWindow.wallModel = wallModel;
-                }
+                //if (WallSuccess())
+                //{
+                //    MessageBox.Show("Стена успешно получена");
+                //    MainWindow.wallModel = wallModel;
+                //}
 
-                if (PhotoSuccess())
-                {
-                    MessageBox.Show("Адрес сервера загрузки фотографии успешно получен");
-                    MainWindow.photoModel = photoModel;
+                //if (PhotoSuccess())
+                //{
+                //    MessageBox.Show("Адрес сервера загрузки фотографии успешно получен");
+                //    MainWindow.photoModel = photoModel;
 
-                    if (UploadSuccess())
-                    {
-                        MessageBox.Show("Фотография успешно загружена");
-                        MainWindow.uploadPhotoModel = uploadPhotoModel;
-                    }
-                }
+                //    if (UploadSuccess())
+                //    {
+                //        MessageBox.Show("Фотография успешно загружена");
+                //        MainWindow.uploadPhotoModel = uploadPhotoModel;
+                //    }
+                //}
 
                 //TODO: Сохранение файла по URL
                 //Photo.SavePhotoToPath("https://pbs.twimg.com/media/Dry69uVX4AEDAHA.jpg", "test.jpg");
@@ -126,8 +126,14 @@ namespace VKManager.View
         {
             try
             {
-                uploadPhotoModel = Photo.UploadPhoto("photo.jpg", photoModel.response.upload_url);
-                GlobalConfig.logger.Info(new String('-', 50) + Serialized<UploadPhotoModel>.GetSerializeString(uploadPhotoModel));
+                //PhotoModel getWall = Photo.GetWallUploadServer(GlobalConfig.UserID, GlobalConfig.AccessToken);
+                //uploadPhotoModel = Photo.UploadPhoto("photo.jpg", getWall.response.upload_url);
+                //string response = Photo.GetSaveWallPhoto(GlobalConfig.UserID, uploadPhotoModel.photo, uploadPhotoModel.server, uploadPhotoModel.hash, GlobalConfig.AccessToken);
+
+                //GlobalConfig.logger.Info(new String('-', 50) + Serialized<UploadPhotoModel>.GetSerializeString(uploadPhotoModel));
+
+                //GlobalConfig.logger.Info(response);
+
                 return true;
             }
             #region Отраработка Ошибок
@@ -171,8 +177,8 @@ namespace VKManager.View
         {
             try
             {
-                photoModel = Photo.GetWallUploadServer(groupModel.response.items.Select( t => t.id).FirstOrDefault(), GlobalConfig.AccessToken);
-                GlobalConfig.logger.Info("PhotoSerialize: " + Serialized<PhotoModel>.GetSerializeString(photoModel));
+                //photoModel = Photo.GetWallUploadServer(GlobalConfig.UserID, GlobalConfig.AccessToken);
+                //GlobalConfig.logger.Info("PhotoSerialize: " + Serialized<PhotoModel>.GetSerializeString(photoModel));
                 return true;
             }
             #region Отраработка Ошибок
@@ -313,6 +319,7 @@ namespace VKManager.View
                 GlobalConfig.logger.Info($" Login: {login} success autorized. UserID: {autorizationModel.user_id}");
                 MessageBox.Show($"userID:{autorizationModel.user_id} \r\n expires:{autorizationModel.expires_in} \r\n token:{autorizationModel.access_token}");
                 GlobalConfig.AccessToken = autorizationModel.access_token;
+                GlobalConfig.UserID = autorizationModel.user_id;
                 return true;
             }
             #region Отраработка Ошибок

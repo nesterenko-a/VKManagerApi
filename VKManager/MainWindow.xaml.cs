@@ -30,16 +30,16 @@ namespace VKManager
         public static string LoginName { get; set; }
         public static GroupModelFull groupModel;
         public static WallModel wallModel;
-        public static PhotoModel photoModel;
-        public static UploadPhotoModel uploadPhotoModel;
+        //public static PhotoModel photoModel;
+        //public static UploadPhotoModel uploadPhotoModel;
 
-        public static string PhotoModel
-        {
-            get
-            {
-                return photoModel.response.upload_url;
-            }
-        }
+        //public static string PhotoModel
+        //{
+        //    get
+        //    {
+        //        return photoModel.response.upload_url;
+        //    }
+        //}
         public MainWindow()
         {
             InitializeComponent();
@@ -88,8 +88,35 @@ namespace VKManager
 
             this.DataContext = from t in wallModel.response.items
                                select t.id;
-            txtPhotoUrl.Text = photoModel.response.upload_url;
+            //txtPhotoUrl.Text = photoModel.response.upload_url;
             //this.DataContext = photoModel.response.upload_url;
         }
+
+        private async void btnUploadPhoto_Click(object sender, RoutedEventArgs e)
+        {
+            btnUploadPhoto.IsEnabled = false;
+            await Task.Delay(2000);
+            await Task.Run(() => UploadPhotoFromWall());
+            btnUploadPhoto.IsEnabled = true;
+        }
+
+        private async static void UploadPhotoFromWall(int group = -157199051, string pathPhoto = "photo.jpg")
+        {
+            await Task.Run(() =>
+            {
+                //Photo.WallUploadServer GetWall = Photo.GetWallUploadServer(group, GlobalConfig.AccessToken);
+                //Photo.UploadPhoto uploadPhoto = Photo.GetUploadPhoto(pathPhoto, GetWall.response.upload_url);
+                //Photo.SaveWallPhoto wallPhoto = Photo.GetSaveWallPhoto(group, uploadPhoto.photo, uploadPhoto.server, uploadPhoto.hash, GlobalConfig.AccessToken);
+                //GlobalConfig.logger.Info(new String('-', 50) + Serialized<Photo.SaveWallPhoto>.GetSerializeString(wallPhoto));
+                Photo.WallUploadServer GetWall = Photo.GetWallUploadServer(group, GlobalConfig.AccessToken);
+                Photo.UploadPhoto uploadPhoto = Photo.GetUploadPhoto(pathPhoto, GetWall.response.upload_url);
+                Photo.SaveWallPhoto wallPhoto = Photo.GetSaveWallPhoto(group, uploadPhoto.photo, uploadPhoto.server, uploadPhoto.hash, GlobalConfig.AccessToken);
+                int result = Wall.PostWall(group, GlobalConfig.AccessToken, "Test Message", $"{Attachments.photo}{wallPhoto.response[0].owner_id}_{wallPhoto.response[0].id}");
+
+                GlobalConfig.logger.Info(new String('-', 50) + Serialized<Photo.SaveWallPhoto>.GetSerializeString(wallPhoto));
+            });
+          
+        }
+
     }
 }
