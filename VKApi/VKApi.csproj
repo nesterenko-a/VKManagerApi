@@ -55,8 +55,6 @@
     <Compile Include="Model\ExceptionModel\ErrorAutorizationModel.cs" />
     <Compile Include="Model\GroupModelFull.cs" />
     <Compile Include="Model\GroupModelMin.cs" />
-    <Compile Include="Model\PhotoModel.cs" />
-    <Compile Include="Model\UploadPhotoModel.cs" />
     <Compile Include="Model\WallModel.cs" />
     <Compile Include="Photo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -11,5 +11,6 @@ namespace VKManager
     {
         public static Logger logger = LogManager.GetCurrentClassLogger();
         public static string AccessToken = default;
+        public static int UserID = default;
     }
 }
