@@ -95,12 +95,12 @@ namespace VKManager
         private async void btnUploadPhoto_Click(object sender, RoutedEventArgs e)
         {
             btnUploadPhoto.IsEnabled = false;
-            await Task.Delay(2000);
-            await Task.Run(() => UploadPhotoFromWall());
+            await Task.Delay(500);
+            await Task.Run(() => UploadPhotoFromWall(-157199051, "Test Message,","photo.jpg"));
             btnUploadPhoto.IsEnabled = true;
         }
 
-        private async static void UploadPhotoFromWall(int group = -157199051, string pathPhoto = "photo.jpg")
+        private async static void UploadPhotoFromWall(int group = -157199051, string message = "", string pathPhoto = "photo.jpg")
         {
             await Task.Run(() =>
             {
@@ -108,10 +108,10 @@ namespace VKManager
                 //Photo.UploadPhoto uploadPhoto = Photo.GetUploadPhoto(pathPhoto, GetWall.response.upload_url);
                 //Photo.SaveWallPhoto wallPhoto = Photo.GetSaveWallPhoto(group, uploadPhoto.photo, uploadPhoto.server, uploadPhoto.hash, GlobalConfig.AccessToken);
                 //GlobalConfig.logger.Info(new String('-', 50) + Serialized<Photo.SaveWallPhoto>.GetSerializeString(wallPhoto));
-                Photo.WallUploadServer GetWall = Photo.GetWallUploadServer(group, GlobalConfig.AccessToken);
-                Photo.UploadPhoto uploadPhoto = Photo.GetUploadPhoto(pathPhoto, GetWall.response.upload_url);
+                Photo.WallUploadServer getWall = Photo.GetWallUploadServer(group, GlobalConfig.AccessToken);
+                Photo.UploadPhoto uploadPhoto = Photo.GetUploadPhoto(pathPhoto, getWall.response.upload_url);
                 Photo.SaveWallPhoto wallPhoto = Photo.GetSaveWallPhoto(group, uploadPhoto.photo, uploadPhoto.server, uploadPhoto.hash, GlobalConfig.AccessToken);
-                int result = Wall.PostWall(group, GlobalConfig.AccessToken, "Test Message", $"{Attachments.photo}{wallPhoto.response[0].owner_id}_{wallPhoto.response[0].id}");
+                int result = Wall.PostWall(group, GlobalConfig.AccessToken, message, $"{Attachments.photo}{wallPhoto.response[0].owner_id}_{wallPhoto.response[0].id}");
 
                 GlobalConfig.logger.Info(new String('-', 50) + Serialized<Photo.SaveWallPhoto>.GetSerializeString(wallPhoto));
             });
